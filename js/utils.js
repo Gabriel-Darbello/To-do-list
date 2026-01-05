@@ -80,5 +80,5 @@ function showAuth() {
 
 // atributos extras de configuração de email
 var actionCodeSettings = {
-  url: 'to-do-list-c1c83.firebaseapp.com'
+  url: window.location.origin
 }
