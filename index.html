@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>To do list</title>
+  <link rel="stylesheet" href="./css/style.css">
+  <link rel="shortcut icon" href="./img/todoListFavicon.png" type="image/x-icon">
+</head>
+<body>
+  <!--Div quecontém todos os elementos do site-->
+  <div id="app">
+
+    <!--Imagem de título do site-->
+    <div class="center">
+      <img src="./img/todoList.png" alt="">
+    </div>
+
+    <!--Feedback de carregamento (loading)-->
+
+    <div id="loading">
+      <img src="./img/loading.gif" alt="">
+    </div>
+
+    <!--Área de autenticação do usuario para entrar na conta-->
+    <div id="auth" class="center">
+
+      <!--Formulario para entrar na conta-->
+      <form id="authForm">
+        <h3 id="authFormTitle">Entre na sua conta para continuar</h3>
+
+        <label for="email">E-mail: </label>
+        <input type="email" placeholder="Digite seu Email" id="email">
+
+        <label for="password">Senha: </label>
+        <input type="password" placeholder="Digite sua senha" id="password">
+
+        <button type="submit" id="submitAuthForm">Entrar</button>
+      </form>
+
+      <!--Opção para redefinição de senha-->
+      <p id="passwordReset">
+        Esqueceu a senha?
+        <button onclick="sendPasswordResetEmail()" class="alternative">Redefinir senha</button>
+      </p>
+
+      <!--Redirecionamento para tela de criação de conta-->
+      <p id="register">
+        Não possui uma conta?
+        <button onclick="toggleToRegister()" class="alternative">Criar sua conta</button>
+      </p>
+      
+      <!--Redirecionamento para tela de entrar na conta-->
+      <p id="access" class="startHidden">
+        Já possui uma conta?
+        <button onclick="toggleToAccess()" class="alternative  ">Entre na sua conta</button>
+      </p>
+
+      <!--Autenticação por outros provedores-->
+      <p>
+        Ou acesse usando: <br>
+        <img src="./img/google.png" alt="Autenticação pelo google" onclick="signInWithGoogle()">
+        <img src="./img/github.png" alt="Autenticação pelo github" onclick="signInWithGithub()">
+      </p>
+    </div>
+
+    <!-- Conteudo para usuarios autenticados-->
+    <div id="userContent" class="startHidden">
+      <hr>
+      <div id="userInfo"  class="center">
+        <img id="userImg">
+        <p id="userName"></p>
+        <p id="userEmail"></p>
+        <p id="emailVerified"></p>
+        <div id="sendEmailVerificationDiv">
+          <button class="alternative" onclick="sendEmailVerification()">Verificar email</button>
+        </div>
+        <button class="alternative" onclick="updateUserName()">Atualizar nome de usuario</button>
+        <button class="alternative" onclick="signOut()">Sair</button>
+        <button class="danger" onclick="deleteUserAccount()">Excluir conta</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Criando recursos do firebase -->
+  <script src="https://www.gstatic.com/firebasejs/7.8.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/7.8.1/firebase-auth.js"></script>
+
+  <!-- Linkando arquivo js-->
+  <script src="./js/utils.js"></script>
+  <script src="./js/firebase.js"></script>
+  <script src="./js/auth.js"></script>
+</body>
+</html>
