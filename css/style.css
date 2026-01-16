@@ -1,6 +1,6 @@
 body {
   color: #444;
-  font-family: Tahoma;
+  font-family: Arial, Helvetica, sans-serif;
   display: flex;
   height: 96vh;
 }
@@ -84,4 +84,41 @@ p {
 #userImg {
   height: 40px;
   border-radius: 100%;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+li:hover {
+  background-color: #ddd;
+  border-radius: 8px;
+}
+
+li {
+  padding: 8px;
+}
+
+.todoBtn {
+  float: right;
+  margin: 0 0 0 4px;
+  position: relative;
+  bottom: 3px;
+}
+
+#ulTodoList li::first-letter {
+  text-transform: uppercase;
+
+}
+
+.imgTodo {
+  height: 20px;
+  margin-right: 4px;
+  border-radius: 4px;
+}
+
+span {
+  position: relative;
+  bottom: 3px;
 }

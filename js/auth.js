@@ -17,14 +17,16 @@ authForm.onsubmit = function (event) {
   }
 }
 
+var currentUser = null;
 // função que analisa o status de autenticação do usuario
 firebase.auth().onAuthStateChanged( function (user) {
   hideItem(loading)
   if (user) {
+    currentUser = user
     console.log('Usuario autenticado')
-    console.log(user)
     showUserContent(user)
   } else {
+    currentUser = null;
     console.log('Usuario não autenticado')
     showAuth()
   }
@@ -84,6 +86,14 @@ function signInWithGithub () {
   })
 }
 
+function signInWithFacebook () {
+  showItem(loading)
+  firebase.auth().signInWithPopup(new firebase.auth.FacebookAuthProvider()).catch(function (error) {
+    showError('Falha ao autenticar com o facebook: ', error)
+    hideItem(loading)
+  })
+}
+
 // função para atualizar o nome de usuario
 function updateUserName () {
   var newUserName = prompt('Informe um novo nome de usuario.', userName.innerHTML)
@@ -117,26 +127,3 @@ function deleteUserAccount() {
   }
 }
 
-// centralizar e traduzir erro
-function showError(prefix, error) {
-  console.log(error.code)
-  hideItem(loading)
-
-  switch (error.code) {
-    case 'auth/internal-error':
-    case 'auth/invalid-email': 
-    case 'auth/wrong-password': alert(prefix + 'Email ou senha inválidos, digite novamente!')
-    break;
-
-    case 'auth/weak-password': alert(prefix + 'Senha deve ter pelo menos 6 caracteres!')
-    break;
-
-    case 'auth/email-already-in-use': alert(prefix + 'O email já está em uso, utilize outro email!')
-    break;
-
-    case 'auth/popup-closed-by-user': alert(prefix + 'O popup de autencicação foi fechado antes da operação ser concluida! ')
-    break;
-
-    default: alert(prefix + ' ' + error.message)
-  }
-}

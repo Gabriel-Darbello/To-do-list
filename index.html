@@ -49,7 +49,7 @@
         Não possui uma conta?
         <button onclick="toggleToRegister()" class="alternative">Criar sua conta</button>
       </p>
-      
+
       <!--Redirecionamento para tela de entrar na conta-->
       <p id="access" class="startHidden">
         Já possui uma conta?
@@ -61,6 +61,7 @@
         Ou acesse usando: <br>
         <img src="./img/google.png" alt="Autenticação pelo google" onclick="signInWithGoogle()">
         <img src="./img/github.png" alt="Autenticação pelo github" onclick="signInWithGithub()">
+        <img src="./img/facebook.png" alt="Autenticação pelo github" onclick="signInWithFacebook()">
       </p>
     </div>
 
@@ -79,16 +80,57 @@
         <button class="alternative" onclick="signOut()">Sair</button>
         <button class="danger" onclick="deleteUserAccount()">Excluir conta</button>
       </div>
+
+      <div id="todoListContent" class="startHidden">
+      <hr>
+        <!--Lista de tarefas do usuario-->
+        <div id="todoList">
+          <h3 id="todoCount">Carregando tarefas...</h3>
+          <div class="center">
+            <label for="search">Buscar</label>
+            <input type="text" placeholder="Buscar tarefa" id="search">
+          </div>
+          <ul id="ulTodoList"></ul>
+        </div>
+        <hr>
+        <div class="center">
+        <!--Formulário para criação da lista de tarefas-->
+          <form id="todoForm">
+            <h3 id="todoFormTitle">Adicionar tarefa:</h3>
+            <label for="name">Tarefa: </label>
+            <input type="text" id="name" placeholder="Digite sua tarefa">
+            <label for="file">Figura:</label>
+            <input type="file" id="file" accept="image/*">
+            <button type="submit" id="submitTodoForm">Adicionar tarefa</button>
+          </form>
+
+          <div id="cancelUpdateTodo" class="startHidden">
+            <button onclick="confirmTodoUpdate()">Confirmar modificação</button>
+            <button class="alternative" onclick="resetTodoForm()">Cancelar modificação</button>
+          </div>
+
+          <div id="progressFeedback" class="startHidden">
+            <progress max="100" id="progress"></progress>
+            <button id="playPauseBtn" class="alternative">Pausar</button>
+            <button id="cancelBtn" class="danger">Cancelar</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- Criando recursos do firebase -->
-  <script src="https://www.gstatic.com/firebasejs/7.8.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/7.8.1/firebase-auth.js"></script>
+  <!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/7.8.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.8.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.8.1/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.8.1/firebase-storage.js"></script>
 
-  <!-- Linkando arquivo js-->
-  <script src="./js/utils.js"></script>
-  <script src="./js/firebase.js"></script>
-  <script src="./js/auth.js"></script>
-</body>
+<!-- Inicialização do Firebase -->
+<script src="./js/firebase.js"></script>
+
+<!-- Arquivos que usam Firebase -->
+<script src="./js/utils.js"></script>
+<script src="./js/auth.js"></script>
+<script src="./js/todo.js"></script>
+
 </html>
