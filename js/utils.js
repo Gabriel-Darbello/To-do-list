@@ -71,14 +71,15 @@ function showUserContent(user) {
   hideItem(auth)
   getDefaultTodoList()
   search.onkeyup =  function () {
+    // Busca tarefas filtradas somente uma vez usando .get
     if (search.value != '') {
       var searchText = search.value.toLowerCase()
-      dbRefUsers.child(user.uid)
-      .orderByChild('nameLowerCase') // ordena as tarefas pelo nome
-      .startAt(searchText).endAt(searchText + '\uf8ff') // delimita os resultados de pesquisa
-      .once('value').then( function (dataSnapshot) { // Busca tarefas filtradas somente uma vez usando .once
-        fillTodoList(dataSnapshot)
-      })
+      dbFirestore.doc(firebase.auth().currentUser.uid).collection('tarefas')
+     .orderBy('nameLowerCase') // ordena as tarefas pelo nome
+     .startAt(searchText).endAt(searchText + '\uf8ff') // delimita os resultados de pesquisa
+     .get().then(function (dataSnapshot) {
+      fillTodoList(dataSnapshot)
+     })
     } else {
       getDefaultTodoList()
     }
@@ -105,11 +106,10 @@ function showUserContent(user) {
   }
 }
 
-// Busca e exibição de tarefas em tempo real (listagem padrão usando .on)
+// Busca e exibição de tarefas em tempo real (listagem padrão usando .onSnapshot)
 function getDefaultTodoList() {
-    dbRefUsers.child(firebase.auth().currentUser.uid)
-    .orderByChild('nameLowerCase') // ordena as tarefas pelo nome
-    .on('value', function (dataSnapshot) {
+  dbFirestore.doc(firebase.auth().currentUser.uid).collection('tarefas')
+  .orderBy('nameLowerCase').onSnapshot(function (dataSnapshot) {
     fillTodoList(dataSnapshot)
   })
 }
@@ -130,6 +130,8 @@ var actionCodeSettings = {
 // Realtime database
 var database = firebase.database()
 var dbRefUsers = database.ref('users')
+// Referencia ao cloud firestore
+var dbFirestore = firebase.firestore().collection('users')
 
 // centralizar e traduzir erro
 function showError(prefix, error) {

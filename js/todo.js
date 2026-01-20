@@ -56,10 +56,10 @@ todoForm.onsubmit = function (event) {
 
 // Completa a criação de tarefas (cria informações no banco de dados)
 function completeTodoCreate(data) {
-  dbRefUsers.child(firebase.auth().currentUser.uid).push(data).then( function () {
-    console.log('A tarefa "' + data.name + '" foi adicionada com sucesso')
-  }).catch( function (error) {
-    showError('Falha ao adicionar tarefas, use no máximo 30 caracteres', error)
+  dbFirestore.doc(firebase.auth().currentUser.uid).collection('tarefas').add(data).then(function () {
+    console.log('Tarefa "' + data.name + '" adicionada com sucesso')
+  }).catch(function (error) {
+    showError('Falha ao adicionar tarefa (use no máximo 30 caracteres): ', error)
   })
     todoForm.name.value = ''
     todoForm.file.value = ''
@@ -108,10 +108,11 @@ function trackUpload(upload) {
 // Função para exibir lista de tarefas para o usuario
 function fillTodoList (dataSnapshot) {
   ulTodoList.innerHTML = ''
-  var num = dataSnapshot.numChildren()
+  var num = dataSnapshot.size // pega as informações do firestore
+
   todoCount.innerHTML = 'Você possui ' + num + (num > 1 || num == 0 ? ' tarefas' : ' tarefa') // exibe na interface o numero de tarefas
   dataSnapshot.forEach(function (item) {
-    var value = item.val() // pega os valores de cada item do realtime database
+    var value = item.data() // pega os valores de cada item do realtime database
     var li = document.createElement('li') // cria uma li
     var imgLi = document.createElement('img') // cria uma imagem
     imgLi.src = value.imgURL ? value.imgURL: './img/defaultTodo.png'// configura o src (source) da imagem, sendo a url padrão ou url enviada pelo usuario
@@ -120,12 +121,12 @@ function fillTodoList (dataSnapshot) {
     var liRemoveBtn = document.createElement('button') // cria um botão para deletar tarefas
     var liUpdateBtn = document.createElement('button') // cria um botão para deletar tarefas
     liUpdateBtn.appendChild(document.createTextNode('Atualizar tarefa')) // define o texto do botão
-    liUpdateBtn.setAttribute('onclick', 'updateTodo("'+ item.key +'")')// configura o atributo do botão para atualizar tarefas
+    liUpdateBtn.setAttribute('onclick', 'updateTodo("'+ item.id +'")')// configura o atributo do botão para atualizar tarefas
     liUpdateBtn.setAttribute('class', 'alternative todoBtn') // define classes para estilização
     liRemoveBtn.appendChild(document.createTextNode('Excluir tarefa')) // define o texto do botão
-    liRemoveBtn.setAttribute('onclick', 'removeTodo("'+ item.key +'")')// configura o atributo do botão para remover tarefas
+    liRemoveBtn.setAttribute('onclick', 'removeTodo("'+ item.id +'")')// configura o atributo do botão para remover tarefas
     liRemoveBtn.setAttribute('class', 'danger todoBtn') // define classes para estilizaçã
-    li.id = item.key // define o id da li como a chave da tarefa
+    li.id = item.id // define o id da li como a chave da tarefa
     spanLi.appendChild(document.createTextNode(value.name)) // adiciona um elemento de texto dentro do span
     li.appendChild(imgLi)// adiciona o img no li
     li.appendChild(spanLi) // adiciona o span dentro da li
@@ -137,15 +138,16 @@ function fillTodoList (dataSnapshot) {
 
 // Função para remover tarefas do banco de dados
 function removeTodo(key) {
-  var todoName = document.querySelector('#' + key + ' > span')
-  var todoImg = document.querySelector('#' + key + '> img')
+  var li = document.getElementById(key)
+  var todoName = li.querySelector('span')
+  var todoImg = li.querySelector('img')
   var confirmation = confirm(`Realmente deseja remover a tarefa "${todoName.innerHTML}"?`);
   if (confirmation) {
-    dbRefUsers.child(firebase.auth().currentUser.uid).child(key).remove().then( function () {
-      console.log('A tarefa "' + todoName.innerHTML + '" foi excluida com sucesso')
+    dbFirestore.doc(firebase.auth().currentUser.uid).collection('tarefas').doc(key).delete().then( function () {
+      console.log(`A tarefas ${todoName.innerHTML} foi removida com sucesso!`)
       removeFile(todoImg.src)
-    }).catch( function (error) {
-      showError('Falha ao remover tarefas', error)
+    }).catch(function (error) {
+      showError('Falha ao remover tarefas: ', error)
     })
   }
 }
@@ -171,7 +173,8 @@ function removeFile(imgUrl) {
 // Função para preparar atualização de tarefas
 function updateTodo(key) {
   updateTodoKey = key // Atribui o conteudo de key dentro de uma variavel global
-  var todoName = document.querySelector('#' + key + ' > span')
+  var li = document.getElementById(key)
+  var todoName = li.querySelector('span')
   // Altera o titulo da tarefa
   todoFormTitle.innerHTML = '<strong>Editar tarefa: </strong>' + todoName.innerHTML
   // Altera o texto da entrada de nome (coloca o nome da tarefa a ser atualizado)
@@ -193,7 +196,8 @@ function resetTodoForm() {
 // Faz a confirmação da alteração de tarefas
 function confirmTodoUpdate() {
   if (todoForm.name.value != '') {
-    var todoImg = document.querySelector('#' + updateTodoKey + '> img')
+    var li = document.getElementById(updateTodoKey)
+    var todoName = li.querySelector('span')
     var file = todoForm.file.files[0] // Seleciona o primeiro arquivo da seleção de arquivos
     if (file != null){ // Verifica se o arquivo foi selecionado
       if (file.type.includes('image')) { // Verifica se o arquivo é uma imagem
@@ -241,13 +245,14 @@ function confirmTodoUpdate() {
 
 // completa a atualização de tarefas (persiste as informações no banco de dados)
 function completeTodoUpdate(data, imgUrl) {
-  dbRefUsers.child(firebase.auth().currentUser.uid).child(updateTodoKey).update(data).then(function () {
+  dbFirestore.doc(firebase.auth().currentUser.uid).collection('tarefas').doc(updateTodoKey).update(data).then(function () {
     console.log(`Tarefa "${data.name}" atualizada com sucesso`)
-    if (imgUrl) {
-      removeFile(imgUrl) // Remove a imagem antiga
-    }
-  }).catch(function (error) {
-    showError('Falha ao atualizar tarefa: ', error)
-      })
+      if (imgUrl) {
+        removeFile(imgUrl) // Remove a imagem antiga
+      }
+    }).catch(function (error) {
+      showError('Falha ao atualizar tarefa: ', error)
+    })
+
   resetTodoForm() // Restaura o formulario de tarefas
 }

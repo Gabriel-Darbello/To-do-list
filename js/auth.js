@@ -17,16 +17,13 @@ authForm.onsubmit = function (event) {
   }
 }
 
-var currentUser = null;
 // função que analisa o status de autenticação do usuario
 firebase.auth().onAuthStateChanged( function (user) {
   hideItem(loading)
   if (user) {
-    currentUser = user
     console.log('Usuario autenticado')
     showUserContent(user)
   } else {
-    currentUser = null;
     console.log('Usuario não autenticado')
     showAuth()
   }
